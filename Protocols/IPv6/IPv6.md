@@ -3,7 +3,7 @@
 - IPv4 总量不足
 - IP 地址分配不均，各个国家分配总量不符合需求
 
-![Alt text](IPv6%E7%AE%80%E4%BB%8B.assets/image.png)
+![Alt text](IPv6.assets/image.png)
 
 # IPv6 的特点
 
@@ -50,11 +50,11 @@ IPv6 的地址组成：**前缀+接口标识**
 | ----------------- | ------------------- | -------- | -------------- |
 
 地址分类如下：
-![Alt text](IPv6%E7%AE%80%E4%BB%8B.assets/image-1.png)
+![Alt text](IPv6.assets/image-1.png)
 
 # IPv6 的报文结构
 
-![Alt text](IPv6%E7%AE%80%E4%BB%8B.assets/image-2.png)
+![Alt text](IPv6.assets/image-2.png)
 
 - 所有可选字段被移出 IPv6 的抱头，或删除或置于扩展报头中
 - 服务类型、传输协议和生存时间被改变
