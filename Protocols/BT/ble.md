@@ -29,7 +29,7 @@
 
 ## HCI 层
 
-在硬件接口(USB/UART)实现 host 与 controll 交互(**单芯片直连就不需要 HCI 了**), 可以传输下面几种类型的数据:
+在硬件接口(USB/UART)实现 host 与 controller 交互(**单芯片直连就不需要 HCI 了**), 可以传输下面几种类型的数据:
 
 - command: host 发给芯片的命令
 - event: 芯片上报给 host 的事件
@@ -139,6 +139,8 @@ BLE 占据 40 个信道, 占用 40 个射频信道，信道间隔 2MHz，中心�
 ![Alt text](ble.assets/image-20.png)
 
 # 设备接入流程
+
+一般来讲，**主动连接的设备称之为 central/master/client，被连接的设备称之为 peripheral/slaver/server**。 一旦两端连接关系确定下来，则基本不会变化。
 
 ## 广播
 
