@@ -1,17 +1,31 @@
+# 监听信道空闲
+
+## 物理载波监听
+
+又称**CCA 机制**
+
+### 能量检测
+
+直接用物理层接收的能量来判断是否有信号进行接入, 若信号强度大于 ED_threshold，则认为信道是忙，若小于 ED_threshold，则认为信道是闲.
+
+在 802.11 中（以 802.11a/g 为例），**能量检测阈值为-62 dBm**
+
+### 载波侦听
+
+- 识别 802.11 数据帧头部的 preamble 部分(preamble 采用特定的序列所构造，该序列对于发送方和接收方都是已知的).
+- 监听的节点会不断采样信道信号，用其做相关运算，其计算值需要与一个阈值进行判断。若大于，则认为检测到了一个信号，若小于则没有检测到
+
+在 802.11 中（以 802.11a/g 为例），**载波侦听阈值为-82 dBm**
+
+## 虚拟载波监听
+
+又叫 **NAV 机制**, 每个 sta 有自己的 NAV 变量, 根据 CTS 中的 duration 设置其值进行倒数
+
 # CSMA/CA 机制
 
 在 802.11 中通过 **CSMA/CA 算法**来处理数据冲突的问题， 全称 Carrier Sense Multiple Access with Collision Avoidance(载波监听多路访问和冲突避免), 分为 **Basic 和 RTS/CTS 模式**.
 
 > 另一个 CSMA/CD 也是解决数据冲突问题, 用于**有线网络**.
-
-## 监听信道空闲
-
-如下三种方式判断信道是否空闲, 是否可以进行 backoff 过程.
-
-- 物理载波监听: **CCA 机制**
-  - 能量检测: 若信号强度大于 ED_threshold，则认为信道是忙，若小于 ED_threshold，则认为信道是闲
-  - 载波侦听: 识别 802.11 数据帧的物理层头部（PLCP header）中的 preamble 部分(preamble 采用特定的序列所构造，该序列对于发送方和接收方都是已知的)
-- 虚拟载波监听: **NAV 机制**, 每个 sta 有自己的 NAV 变量, 根据 CTS 中的 duration 设置其值进行倒数
 
 ## Basic 模式
 
@@ -75,3 +89,42 @@ type = 01, 控制数据包的发送, 拥塞管理, 防止冲撞. **控制帧不�
 
 type = 10, 由于数据发送和接收方式的不同, 可以细分很多数据帧类型:
 ![Alt text](2_mac.assets/image-4.png)
+
+# QOS
+
+802.11e 是对 802.11 mac 层的增强协议, 提供了 QOS 机制. 在此之前, 802.11 没有提供服务区分，所有的流量都被视为 best-effort 流量.
+要提供 QOS, 就需要对数据流量进行分类, 优先传输高优先级的数据, 保证服务质量. AP 需要处理有线网络的优先级, 映射到 wifi 网络上, 再与 sta 交互.
+
+## 有线网络 vlan Tag
+
+802.11e 的优先级实际上是通过 vlan 协议的 Q-Tag 映射的:
+![Alt text](2_mac.assets/image-2.png)
+
+802.p 中对上图 PCP 的 8 个优先级进行了固定映射, 然后再映射到 802.11e 中的四个优先级上:
+![Alt text](2_mac.assets/image-9.png)
+![Alt text](2_mac.assets/image-10.png)
+
+## wifi mac 层优先级
+
+当数据包到达 MAC 层时，根据上面的映射关系，将**原始数据包中的优先级映射到 802.1e 的不同优先级队列**中:
+
+![Alt text](2_mac.assets/image-1.png)
+
+如图所示, 四个优先级由低到高分别为:
+
+- 背景流量 `AC_BK`：对于延迟要求最不敏感的流量，比如文件传输，打印作业的流量
+- 尽力传输 `AC_BE`：默认的无线流量类型就是 best-effort 类型，比如网页访问的数据流量类型。对于延迟有一定需求，但是没有那么敏感。
+- 视频服务 `AC_VI`：视频流量的优先级低于语音服务，高于其他两项。视频服务也是延迟敏感类型的服务，所以具有一定的优先级
+- 语音服务 `AC_VO`：一般为 VoIP 流量类型，对延迟最为敏感，同时也是优先级最高的流量。
+
+之后在 wifi 中传输时, 需要将优先级信息放到 mac 帧的 QoS Control 字段(具体格式参照协议 9.2.4.5):
+![Alt text](2_mac.assets/image-11.png)
+
+## Admission Control
+
+除了四个默认的优先级, 可以通过 QoS control 字段的 TID 属性使用自定义优先级, 并通过 Admission Control 在 AP 和 STA 之间协商如下信息(6.3.26 TS management interface).
+
+- 定义数据的类型
+  ![Alt text](2_mac.assets/image-12.png)
+- 配置 QoS 参数
+  ![Alt text](2_mac.assets/image-13.png)
