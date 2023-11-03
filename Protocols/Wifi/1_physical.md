@@ -34,9 +34,9 @@
 | 802.11be | wifi 7 | 2024     | 2.4、5、6     | 单流: 2.88Gbps<br>16×16 MIMO: 46Gbps  |
 
 - **802.11** 定义了两种 radio-based 物理层的标准:
-  - **frequency hopping**: 频率跳变，通过在多个频率之间快速切换来提高通信的安全性和抗干扰能力。
-  - **direct sequence**: 直接序列，用 11bit chipping sequence 保证传输的完整性
-- **802.11b** 增加了变种的 direct sequence，可以提供 11M 的带宽
+  - **FHSS**: 频率跳变，通过在多个频率之间快速切换来提高通信的安全性和抗干扰能力)。
+  - **DSSS**: 直接序列，用 11bit chipping sequence 保证传输的完整性
+- **802.11b** 废弃 FHSS，增加了变种的 DSSS/CCK，可以提供 11M 的带宽
 - **802.11a**: 增加了 OFDM 64QAM 技术(正交频分多路复用)，在 5GHz 频段可提供 54M 带宽
 - **802.11g**: 使用 OFDM 技术在 2.4GHz 频段提供 54M 带宽
 - **802.11n**: 增加了 MIMO 技术(多天线多通道)
