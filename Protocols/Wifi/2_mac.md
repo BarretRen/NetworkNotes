@@ -63,12 +63,27 @@ RTS/CTS 另外一个思维就是 "采用小的数据包碰撞，来避免大的�
 下图为物理层开始多级的拆分, <font color='red'>注意: 不同版本的 wifi 协议, 物理层的格式不一样, 下图的物理层格式为 802.11b.</font>
 ![Alt text](2_mac.assets/image-3.png)
 
-- To DS：表明该帧是 BSS 向 DS 发送的帧；
-- From DS：表明该帧是 DS 向 BSS 发送的帧；
-  ![Alt text](2_mac.assets/image-7.png)
-- Address：依次为**源地址(SA)、目的地址(DA)、传输工作站地址(TA)、接收工作站地址(RA)**，SA 与 DA 必不可少，后两个只对跨 BSS 的通信有用，而目的地址可以为单播地址(Unicast address)、多播地址(Multicast address)、广播地址(Broadcast address).
+- Address：根据 To DS 和 From DS 的组合不同，四个地址含义不同
+- Protected Frame: 为 1 表示帧体部分包含加密处理过的数据，为 0 则表示没有进行加密处理
 
 对于不同的帧类型, 帧的具体格式会有所变化:
+
+## Duration ID
+
+标记帧传输的时间, 当 bit15 为 0 时, 用来设定 NAV 的值, STA 需要监听此值来更新虚拟监听的 NAV 值:
+![Alt text](2_mac.assets/image-14.png)
+
+## To DS 和 From DS
+
+- To DS：表明该帧是无线链路向 AP 发送的帧；
+- From DS：表明该帧是 AP 向无线链路发送的帧；
+
+两个字段有以下 4 中组合, 会导致 address 的含义不同:
+
+![Alt text](2_mac.assets/image-7.png)
+
+分别对应下图 4 中使用场景(SA 指源地址, DA 指目的地址, TA 指 wifi 发送端, RA 指 wifi 接收端):
+![Alt text](2_mac.assets/image-15.png)
 
 ## 管理帧
 
@@ -79,7 +94,7 @@ type = 00, 用于在主机之间建立二层连接和认证, 常见子类型有:
 
 ## 控制帧
 
-type = 01, 控制数据包的发送, 拥塞管理, 防止冲撞. **控制帧不需要 data 部分**.
+type = 01, 控制数据包的发送, 拥塞管理, 信道的获取, 收到数据的应答等. **控制帧不需要 data 部分**.
 ![Alt text](2_mac.assets/image-5.png)
 
 - BAR/BA：block 块确认请求和 确认， 类似 TCP/IP 的窗口机制
