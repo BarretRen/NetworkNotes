@@ -19,8 +19,8 @@
 
 - command: host 发给芯片的命令
 - event: 芯片上报给 host 的事件
-- ACL: 双向交互的普通数据
-- SCO: 双向交互的音频数据, 比如通话和传统 audio 数据
+- ACL: 分组数据传输, 有重传机制, 传输对实时性要求不高的场景, 比如听歌, 发送文件等
+- SCO: 同步话音传输, 主要用来传输对时间要求很高的数据通信, 比如通话和重发被损坏的部分数据
 - ISO: 5.2 加入的 LE Audio 数据
 
 ## Host 层
@@ -131,10 +131,3 @@ Characteristic 的额外信息。比如温度的单位是什么，数据是用�
 - Extended Properties: Characteristic 的扩展属性
 - Characteristic User Description: 描述信息
 - Client Characteristic Configuration Descriptor: 客户端特征配置描述符, **用于开启和关闭通知信息**。 如果开启了, 每当该 Characteristic value 发生改变时, client 就会收到通知.
-
-# 蓝牙音频传输
-
-mp3 和 flac 音频编码都是在 PCM 音频编码基础上二次编码得到的，其目的是减小文件体积。在音频播放时，就需要**把 mp3，flac 等编码格式的数据还原为 PCM 编码格式的数据，这个过程叫做解码**。然后经过数字-模拟转换（DAC）变成模拟信号，最后经过放大电路驱动喇叭(本机喇叭或有线耳机的喇叭)，将声音播放出来.
-
-在蓝牙系统中，发射端要将被音乐软件解码的 PCM 编码二次编码为蓝牙支持的编码，接受端收到后，再将其解码为 PCM 编码:
-![Alt text](2_gatt.assets/image-19.png)
