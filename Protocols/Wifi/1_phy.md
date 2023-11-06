@@ -2,7 +2,7 @@
 
 ## 协议分类
 
-![Alt text](1_physical.assets/image-7.png)
+![Alt text](1_phy.assets/image-7.png)
 
 - Connectivity：主要是标准无线局域网的协议，主要集中在 PHY 和 MAC 层，一般路由器演进都是以这些协议作为主要标志
 - Spectrum：有点偏向认知无线电的方向，主要是和同频其他设备共存的问题。其主要内容演进集中于 CSMA/CA 过程以及其中的 CCA 部分（Clear Channel Assessment）
@@ -46,7 +46,7 @@
 
 # 物理层划分
 
-![Alt text](1_physical.assets/image-2.png)
+![Alt text](1_phy.assets/image-2.png)
 
 - PLCP: 物理层收敛程序, 负责将 MAC 帧转化之后发送到传输介质
 - PMD: 物理媒介, 负责传输 MAC 帧
@@ -56,23 +56,23 @@
 ## 2.4 GHz channel 频率
 
 计算公式如下：
-![Alt text](1_physical.assets/image-18.png)
+![Alt text](1_phy.assets/image-18.png)
 
 <font color='red'>注意：1-13 信道是基本常用信道，14 很少支持</font>
 
-![Alt text](1_physical.assets/image-17.png)
+![Alt text](1_phy.assets/image-17.png)
 
 ## 5 GHz channel 频率
 
 计算公式如下：
-![Alt text](1_physical.assets/image-26.png)
+![Alt text](1_phy.assets/image-26.png)
 
 常用如下信道：
-![Alt text](1_physical.assets/image-19.png)
+![Alt text](1_phy.assets/image-19.png)
 
 # 功率和信号强度
 
-![Alt text](1_physical.assets/image-20.png)
+![Alt text](1_phy.assets/image-20.png)
 
 - ① 和 ⑦ 表示射频发送端处的功率，单位是 dBm。
 - ② 和 ⑥ 表示连接天线的转接头和馈线等线路损耗，单位是 dB。
@@ -86,35 +86,35 @@
 - **RSSI**：接收信号强度指示 RSSI(Received Signal Strength Indicator)，指示无线网络覆盖内某处位置的信号强度，是 EIRP 经过一段传输路径损耗和障碍物衰减后的值。网规遇到的信号强度弱问题就是指 RSSI 弱，没有达到指标要求值，导致无线终端接收到很弱的信号甚至接收不到信号
   - **接收信号强度 = 射频发射功率 + 发射端天线增益 – 路径损耗 – 障碍物衰减 + 接收端天线增益**
 
-![Alt text](1_physical.assets/image-25.png)
+![Alt text](1_phy.assets/image-25.png)
 
 # 802.11b 帧
 
 ## 物理层 header
 
-![Alt text](1_physical.assets/image.png)
+![Alt text](1_phy.assets/image.png)
 
 ## 数据发送
 
-![Alt text](1_physical.assets/image-1.png)
+![Alt text](1_phy.assets/image-1.png)
 
 ## 数据接收
 
-![Alt text](1_physical.assets/image-3.png)
+![Alt text](1_phy.assets/image-3.png)
 
 # 802.11 a/g 帧
 
 ## 物理层 header
 
 相比 802.11b 的物理层头部，802.11a/g 较为复杂一些, 基于 ofdm symbol:
-![Alt text](1_physical.assets/image-4.png)
+![Alt text](1_phy.assets/image-4.png)
 
 ## 数据发送
 
 802.11a/g 和 802.11b 的发送过程基本变化不大:
-![Alt text](1_physical.assets/image-5.png)
+![Alt text](1_phy.assets/image-5.png)
 
 ## 数据接收
 
 和 802.11b 不太相同相同的是: 如果 CS 检测到的话，那么可能就存在一个数据帧，那么需要再次通过 FD 来确定是不是一个数据帧, 而不是检测 SFD.
-![Alt text](1_physical.assets/image-6.png)
+![Alt text](1_phy.assets/image-6.png)
