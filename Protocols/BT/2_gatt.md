@@ -7,15 +7,16 @@
 
 也叫硬件芯片层, 通常包含以下部分:
 
-- Device Manager: 控制蓝牙设备的通用行为，负责与蓝牙通信过程中，所有的与数据无关的操作，如查询设备，连接设备
-- Link Manager: 链路管理，主要负责创建，修改，释放逻辑链路
-- Baseband Resource Manager: 基带资源管理，进行**射频信号与数字信号或语音信号的相互转化**
-- Link Controller: 链路控制，主要负责编码和解码蓝牙数据包
 - PHY: 物理层，主要负责发送，接收物理通道的信息包
+- LL: 链路层，是**协议栈的核心**
+  - Device Manager: 控制蓝牙设备的通用行为，负责与蓝牙通信过程中，所有的与数据无关的操作，如查询设备，连接设备
+  - Baseband Resource Manager: 基带资源管理，进行**射频信号与数字信号或语音信号的相互转化**
+  - Link Controller: 链路控制，主要负责编码和解码蓝牙数据包
+  - Link Manager: 链路管理，主要负责创建，修改，释放逻辑链路
 
 ## HCI 层
 
-为 Host 访问 Controller 提供一组标准的接口(**单芯片直连就不需要 HCI 了**), 可以传输下面几种类型的数据:
+HCI 主要用于 2 颗芯片实现 BLE 协议栈的场合， 为 Host 访问 Controller 提供一组标准的接口(**单芯片直连就不需要 HCI 了**), 可以传输下面几种类型的数据:
 
 - command: host 发给芯片的命令
 - event: 芯片上报给 host 的事件
@@ -27,15 +28,15 @@
 
 蓝牙协议层, 其中 L2CAP 是公用的, GAP 是核心规范用于设备间连接和配对. 除此之外, 我们可以通过 profile 定义其他蓝牙功能以支持图里其他的协议.
 
-- L2CAP: 链路控制和适配协议
+- L2CAP: 链路控制和适配协议， 对 LL 数据进行了简单封装
   - Channel Manager: 通道管理，主要用于创建、管理、关闭 L2CAP 通道，用于服务协议和应用数据的传输。
   - L2CAP Resource Manager: L2CAP 资源管理，主要负责报文分片和重组、流控、重传、报文完整性校验
 - GAP 核心规范: 定义了蓝牙设备的基本功能, 设备间**发现、连接、配对绑定**的流程
   - Security Manager Protocol: SMP 安全管理协议，定义了**蓝牙设备配对、认证、解密**等行为的安全操作
   - Attribute Protocol: ATT，属性协议
   - Generic Attribute Profile: GATT，位于 ATT 之上，定义了属性组合构成的服务
-  - SDP: 服务发现协议, 让 app 查询哪些服务可用
 - 其他协议
+  - SDP: 服务发现协议, 让 app 查询哪些服务可用
   - RFCOMM: 串口仿真协议, 用于蓝牙电话/透传 SPP
   - OBEX: 对象交换协议, 用于电话本/短信/文件传输
     - PBAP: 电话本访问协议
