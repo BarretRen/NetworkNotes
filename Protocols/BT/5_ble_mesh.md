@@ -21,17 +21,17 @@ ble mash 使用一种称为**泛洪**的方法来发布和中继消息, 范围�
 
 ![Alt text](5_ble_mesh.assets/image.png)
 
-## node
+## 节点和拓扑结构
 
 ![Alt text](5_ble_mesh.assets/image-1.png)
 
-### 功能元素
+### 节点分类
 
 节点功能分为如下几种, :
 
 - **低功率节点**(LPN): 可以使用低功率特性来减少无线电开启时间并节省功率. 与朋友节点协同工作
 - **朋友节点**: 存储发往 LPN 的传入消息和安全更新；当 LPN 请求这些消息时，朋友节点将存储的信息传递给 LPN
-- **中级节点**: 接收和重新传输消息
+- **中继节点**: 接收和重新传输消息
 - **代理节点**: 与不支持 mesh 的设备，以 GATT 的方式进行连接通信，使得设备可与网络进行通信
   ![Alt text](5_ble_mesh.assets/image-9.png)
 
@@ -106,5 +106,5 @@ LPN 定期启用其收发器并向 Friend 节点发送 Friend Poll，请求为�
 
 # mesh 消息格式
 
-mesh 消息在 bearer layer 可以以广播包或 gatt 数据包(需要 proxy)两种方式传输, 然后在 mesh 模型的每一次都有相应的封装:
+mesh 消息在 bearer layer 可以以广播包或 gatt 数据包(需要 proxy)两种方式传输, 然后在 mesh 模型的每一层都有相应的封装:
 ![Alt text](5_ble_mesh.assets/image-10.png)
