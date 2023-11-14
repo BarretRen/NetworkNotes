@@ -78,7 +78,10 @@ ble mash 使用一种称为**泛洪**的方法来发布和中继消息, 范围�
 - 配置数据分发:
   ![Alt text](5_ble_mesh.assets/image-8.png)
   - 通过两台设备的私有密钥和交换的对称公共密钥生成会话密钥, 会话密钥随后用于保护完成配置过程所需数据的后续分发.
-  - 启动配置设备配置完成后，会为配置的设备分配网络密钥 net-key，即 IV 索引和单播地址，之后设备就可以作为 mesh 网络的节点了
+  - 启动配置设备配置完成后，会为配置的设备分配网络密钥 net-key, iv index 和单播地址，之后设备就可以作为 mesh 网络的节点了
+
+wireshark 抓包示例:
+![Alt text](5_ble_mesh.assets/image-11.png)
 
 # Friend 和 LPN
 
