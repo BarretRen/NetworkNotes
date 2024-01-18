@@ -132,3 +132,12 @@ Characteristic 的额外信息。比如温度的单位是什么，数据是用�
 - Extended Properties: Characteristic 的扩展属性
 - Characteristic User Description: 描述信息
 - Client Characteristic Configuration Descriptor: 客户端特征配置描述符, **用于开启和关闭通知信息**。 如果开启了, 每当该 Characteristic value 发生改变时, client 就会收到通知.
+
+# notification 和 indication
+
+Ble 服务端传输消息有两个常用手段，notification 和 indication:
+
+- Notification 不需要应答，所以服务端发送的消息，它自己并不知道消息是否发送成功。
+- Indication 需要客户端应答，每次服务端发送完数据都需要客户端发送应答消息。**如果你发送的 indication 客户端没有应答，你是不能再次发送 indication 的**
+
+需要注意的是，服务端一开始是无法直接发送 Indication 和 Notification。首先必须是客户端通过往服务端的**Client Characteristic Configuration Descriptor**写入值来使能服务端的这两个功能 Notification/Indication，这样服务端才能发送
