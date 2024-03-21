@@ -40,8 +40,9 @@
 - **802.11a**: 增加了 OFDM 64QAM 技术(正交频分多路复用)，在 5GHz 频段可提供 54M 带宽
 - **802.11g**: 使用 OFDM 技术在 2.4GHz 频段提供 54M 带宽
 - **802.11n**: 增加了 MIMO 技术(多天线多通道)
-- **802.11ac**: OFDM 256QAM 和 MU-MIMO 技术
-- **802.11ax**: OFDMA 1024QAM
+- **802.11ac**: OFDM 256QAM 和下行 MU-MIMO 技术
+- **802.11ax**: OFDMA 1024QAM， 完整版上下行 MU-MIMO 技术, 多用户多输入输出系统
+  ![alt text](1_phy.assets/image-8.png)
 - **802.11be**: OFDMA 4096QAM
 
 # 物理层划分
