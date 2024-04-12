@@ -68,7 +68,7 @@ WEP 模式密码是固定的，只需要在**tools->Decrypt WLAN packets**中增
 ### WPA/WPA2
 
 - 确认抓到了 4 次握手的报文 WAPOL-KEY
-- 和 WEP 一样, 天界一个 WPA 类型的 keyset, 然后在 Decrypt WLAN Packets 选择该 key
+- 和 WEP 一样, 添加一个 WPA 类型的 keyset, 然后在 Decrypt WLAN Packets 选择该 key
   ![Alt text](wifi_capture.assets/image-6.png)
 - 之后就可以在新的窗口看到加密的报文被解密, 被解密的报文可以单独保存
   ![Alt text](wifi_capture.assets/image-7.png)
