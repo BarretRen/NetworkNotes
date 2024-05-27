@@ -49,7 +49,7 @@ STA (工作站)启动初始化、开始正式使用、AP 传送数据幀之前�
 **WPA/WPA2 仅支持开放式系统认证**, 所以上面的认证过程并没有验证密码. 在关联之后, 还需要一个接入认证阶段和后面的 4 次握手:
 
 - 家庭使用 PSK 方式, 用在安全要求低的地方:
-  - sta 和 ap 两侧都通过 ssid 和 passphrase 算出 PSK
+  - sta 和 ap 两侧都通过 ssid 和 passphrase 算出 PSK, 四次握手前, 通过`pbkdf2_sha1(passphrase, ssid, ssid_len)`计算
   - sta 根据 PSK 计算出 PMK
   - ap 在根据 PSK 计算出 PMK 和 GMK
   - 之后进行 4 次握手
@@ -60,27 +60,45 @@ STA (工作站)启动初始化、开始正式使用、AP 传送数据幀之前�
 
 4 次握手是**密钥协商阶段**, 是**根据接入认证阶段生成的成对主钥 PMK**(Pairwise Master Key)产生成对临时密钥 PTK(Pairwise Transient Key)和群组临时密钥 GTK(Group Temporal Key)。
 
-- PTK 用来加密单播报文
-- GTK 用来加密组播和广播无线报文
+- PTK: 四次握手后用来加密单播数据, 计算公式为`PTK = PRF (PMK + ANonce + SNonce + Mac(AA)+ Mac(SA))`
+  - PMK: 四次握手前用 sha 算法生成
+  - ANonce: ap 生成的随机数
+  - SNonce: sta 生成的随机数
+  - MAC(AA): ap 的 mac 地址
+  - MAC(SA): sta 的 mac 地址
+- GTK: 四次握手后用来加密组播和广播数据, 由 AP 侧计算得来, 公式为`GTK=PRF-X(GMK,”Group key expanision”,ap mac|Anonce)`
+  - GMK: group master key, 四次握手前生成
+  - ap mac: ap 的 mac 地址
+  - Anonce: ap 生成的随机数
 
 四次握手通过 EAPOL(Extensible authentication protocol over LAN)进行消息交换。
 ![Alt text](3_sta_conn.assets/image-13.png)
 
 **Message 1**:
 
-由 AP 发起四次握手，**AP 发送一条包含 ANonce 的消息到 Station，Station 用它生成 PTK**。
-生成 PTK 的公式：PTK = PRF (PMK + ANonce + SNonce + Mac (AA)+ Mac (SA))，由于在 4 次握手之前已经经历了认证和关联的阶段，因此 Station 是知道 AP 的 Mac 地址，所以只需要 ANonce 就可以生成 PTK 了。
+AP 发起四次握手，**AP 生成随机数 ANonce 发送给 Station，Station 用它生成 PTK**。
 ![Alt text](3_sta_conn.assets/image-14.png)
+
+由于在 4 次握手之前已经经历了认证和关联的阶段，因此 Station 是知道 AP 的 Mac 地址，所以只需要 ANonce 就可以生成 PTK 和 MIC 了。
+
+- PTK(sta) 根据公式计算
+- 提取 PTK(sta)的前 16 个字节 KCK 和 EAPOL 报文计算出 MIC(sta)
 
 **Message 2**:
 
-**一旦 Station 创建了自己的 PTK，它会立即响应一条 EAPOL 消息给 AP，包含了 SNonce 和 MIC**。
-**AP 用 SNonce 生成自己的 PTK，MIC 是用来校验 Station 发来的消息的完整性**(除了 1/4，从 2/4 报文开始，后面的每个报文都会有 MIC)。AP 收到 SNonce 之后，生成的 PTK 就可以用来加密后面两次握手的 key 了。
+**Station 创建了自己的 PTK 后，它会立即响应一条 EAPOL 消息给 AP，包含了生成的随机数 SNonce 和 MIC**。MIC 是用来校验 Station 发来的消息的完整性(除了 1/4，从 2/4 报文开始，后面的每个报文都会有 MIC)
 ![Alt text](3_sta_conn.assets/image-15.png)
+
+AP 收到 SNonce 后可以生成 PTK 和 MIC 了
+
+- AP 收到 SNonce 后用相同方式生成 PTK(ap), 生成的 PTK 就可以用来加密后面两次握手的 key 了
+- 根据 PTK(ap)的前 16 字节和 EAPOL 生成 MIC(ap), 并与消息中的 MIC(sta)比较. 相同则进行下一步握手, 否则表示握手失败(**sta 端 pmk 错误, 也表示 sta 侧密码错误**).
+- AP 生成 GTK, 并使用使用 PTK 中间 16 字节的 KEK 加密 GTK
 
 **Message 3**:
 
-这次握手主要是**把 GTK 发送给 Station，并且告知 Station 安装 PTK 和 GTK**。由于第二次握手生成了 PTK，可以用来加密数据了，所以这里对 GTK 进行了加密。
+这次握手主要是**AP 把 GTK 发送给 Station，并且告知 Station 安装 PTK 和 GTK**。
+sta 验证 MIC(ap)是否和 MIC(sta)一致，一致则继续。用自己的 PTK 解密 AP 发过来的加密 GTK, 并保存好 PTK 和 GTK.
 ![Alt text](3_sta_conn.assets/image-16.png)
 
 **Message 4**:
