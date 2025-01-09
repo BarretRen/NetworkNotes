@@ -37,6 +37,35 @@ TCP 通过让发送方维护一个称为**接收窗口**（receive window）的�
 
 TCP 协议也会采用校验和的方式来检验数据的有效性，主机在接收数据的时候，会将重复的报文丢弃，将乱序的报文重组，发现某段报文丢失了会请求发送方进行重发.
 
+## KeepAlive 机制
+
+TCP 长连接下，客户端和服务器若长时间无数据交互情况下，若一方出现异常情况关闭连接，抑或是连接中间路由出于某种机制断开连接，而此时另一方不知道对方状态而一直维护连接，浪费系统资源的同时，也会引起下次数据交互时出错。
+KeepAlive 机制基本原理是：在此机制开启时，当长连接无数据交互一定时间间隔时，连接的一方会向对方发送保活探测包，如连接仍正常，对方将对此确认回应。
+
+### 相关参数
+
+- tcp_keepalive_time：最后一次数据交换到 TCP 发送第一个保活探测包的间隔，即允许的持续空闲时长，或者说每次正常发送心跳的周期
+- tcp_keepalive_probes：最大允许发送保活探测包的次数，到达此次数后直接放弃尝试，并关闭连接
+- tcp_keepalive_intvl：在 tcp_keepalive_time 之后，没有接收到对方确认，继续发送保活探测包的发送频率
+
+socket 创建时用如下方式设置：
+
+```c
+int keepalive = 1;          // 开启TCP KeepAlive功能
+int keepidle = 7200;        // tcp_keepalive_time
+int keepcnt = 9;            // tcp_keepalive_probes
+int keepintvl = 75;         // tcp_keepalive_intvl
+
+setsockopt(socketfd, SOL_SOCKET, SO_KEEPALIVE, (void *)&keepalive, sizeof(keepalive));
+setsockopt(socketfd, SOL_TCP, TCP_KEEPIDLE, (void *) &keepidle, sizeof (keepidle));
+setsockopt(socketfd, SOL_TCP, TCP_KEEPCNT, (void *)&keepcnt, sizeof (keepcnt));
+setsockopt(socketfd, SOL_TCP, TCP_KEEPINTVL, (void *)&keepintvl, sizeof (keepintvl));
+```
+
+### 报文格式
+
+![alt text](TCP.assets/image-7.png)
+
 # TCP 报文格式
 
 ## 头部结构
