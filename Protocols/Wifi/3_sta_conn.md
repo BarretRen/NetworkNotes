@@ -105,6 +105,24 @@ sta 验证 MIC(ap)是否和 MIC(sta)一致，一致则继续。用自己的 PTK 
 
 第四次是**最后一条 EAPOL 消息，相当于一个确认包，告诉 AP PTK 已经安装好，AP 收到该消息后，也安装 PTK**。安装的意思是指使用 PTK 和 GTK 来对数据进行加密.
 
+### PMKSA 超时
+
+以 wpa_supplicant 为例:
+`wpa_sm_init`初始化时回设置`dot11RSNAConfigPMKLifetime`时间, 默认是 43200 秒, 当四次握手计算的 pmk 超时时, 会触发调用`pmksa_cache_expire`断开当前连接重新认证进行新的认证和四次握手.
+注意只适用于 WPA3 SAE 的 auth type, 当确定是 SAE 时, 会调用`sme_sae_set_pmk`添加 pmksa:
+
+```c
+sme_sae_set_pmk:
+    wpa_sm_set_pmk(wpa_s->wpa, wpa_s->sme.sae.pmk, PMK_LEN, wpa_s->sme.sae.pmkid, bssid);
+        if (bssid)
+            sm->cur_pmksa = pmksa_cache_add(...);
+                //设置超时时间
+                entry->expiration = now.sec + pmksa->sm->dot11RSNAConfigPMKLifetime;
+```
+
+报文中可以从如下字段查看：
+![alt text](3_sta_conn.assets/image-5.png)
+
 ## WPA3 接入流程
 
 为了保障用户都能接入到网络上，OPEN 式的 WIFI 是唯一可选的方式，虽然开放式的 WIFI 在使用时没遇到问题，但是用户数据也确实存在这明显的安全风险，所以 WPA3 引入了 SAE 和 OWE.
@@ -134,3 +152,30 @@ SAE 针对加密网络，通过证实密码信息，用密码进行对等实体�
 # 加密算法
 
 - https://zhuanlan.zhihu.com/p/51695002
+
+# SA Query 机制
+
+## 报文格式
+
+SA Query Request 和 Response 是 Action 类型报文:
+![alt text](3_sta_conn.assets/image-4.png)
+
+- Category 字段为 8，表示该 Action 是 SA Query 报文
+- Action 为 0 代表 Request，为 1 代表 Response
+- Transaction Identifier 代表交互 ID
+
+## ap 侧使用
+
+为防止被仿冒关联或者重关联报文干扰，导致 AP 对客户端作出错误的响应，802.11w 提出 SA Query 机制来保证无线用户的在线连接安全。当 AP 处在安全的连接时，收到**不加密的 assoc 或者 reassoc 请求**时，AP 会发送对应的响应报文，错误码为 30(`WLAN_STATUS_ASSOC_REJECTED_TEMPORARILY`)，并附带 Time Out IE，其中注明了 SA 静默时间。
+**SA 静默时间之内，AP 不会再次响应任何关联或者重关联报文。客户端应该在此时间内也保持静默状态，不发送关联或者重关联报文**。
+
+同时，AP 启动 SA Query 机制，向客户端发送 SA Query Request 报文:
+
+- 如果能收到客户端的 SA Query Response 或者任意经过保护的管理帧，则认为当前已有的连接是可靠的，忽略刚刚收到的关联请求。
+- 如果没有收到回应，AP 每隔一段时间，会再发送一个 SA Query Request，直到达到最大发送次数后如果还没收到回应，AP 删除客户端信息，Station 需要重新上线。
+
+![alt text](3_sta_conn.assets/image-3.png)
+
+## sta 侧使用
+
+客户端需要同样的保护机制。对其来说，**如果收到一个未保护的 disaccoc 或者 deauth 报文**，会发起与上述机制相同的 SA Query 校验，由 AP 回复 SA Query Response.
