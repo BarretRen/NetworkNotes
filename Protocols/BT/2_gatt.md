@@ -119,6 +119,8 @@ Service 是蓝牙设备对外提供的服务，一个设备可以提供多个服
 - **每个 Characteristic 由一个 UUID 唯一标识**。
 - **在与蓝牙设备通信时，主要就是通过读写 Characteristic 的 value 完成**。
 - Characteristic 包含一个值 (value)和 0 至 n 个描述符 (Descriptor) 组成。
+- properties 可取下面的值：
+  ![alt text](2_gatt.assets/image-7.png)
 
 一个示例:
 ![Alt text](2_gatt.assets/image-4.png)
@@ -141,3 +143,9 @@ Ble 服务端传输消息有两个常用手段，notification 和 indication:
 - Indication 需要客户端应答，每次服务端发送完数据都需要客户端发送应答消息。**如果你发送的 indication 客户端没有应答，你是不能再次发送 indication 的**
 
 需要注意的是，服务端一开始是无法直接发送 Indication 和 Notification。首先必须是客户端通过往服务端的**Client Characteristic Configuration Descriptor**写入值来使能服务端的这两个功能 Notification/Indication，这样服务端才能发送
+
+# BLE 设备的主要交互方式
+
+- 读取数据（Read）
+- 写入数据（Write）
+- 订阅通知（Notify / Indicate）
