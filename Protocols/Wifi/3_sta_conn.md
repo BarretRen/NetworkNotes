@@ -138,6 +138,8 @@ OWE 是针对 OPEN 网络，**不需要输入密码进行认证，但是数据�
 
 ### SAE
 
+SAE 在 WPA/WPA2-PSK 原有的四次握手前增加了 SAE 握手，实质上是为了动态协商成对主密钥 PMK。WPA/WPA2-PSK 的 PMK 只与 SSID 和预共享密钥有关，而 SAE 引入了动态随机变量，每次协商的 PMK 都是不同的，提升了安全性。
+
 SAE 针对加密网络，通过证实密码信息，用密码进行对等实体同时认证，认证的双方式对等的，**以前是认证者对申请者认证，现在是互相认证**，然后派生出更安全的秘钥. <font color='red'>因此, WPA3 SAE 的关联过程中有四个 auth 帧.</font>
 
 ![alt text](3_sta_conn.assets/image.png)
